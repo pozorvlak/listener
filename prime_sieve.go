@@ -1,4 +1,4 @@
-package prime_sieve
+package primes
 
 func generate(ch chan<- int) {
         for i := 2; ; i++ {
@@ -15,14 +15,18 @@ func filter(in <-chan int, out chan<- int, prime int) {
         }
 }
 
-func PrimesUpTo(n int) {
+func Primes() chan int {
         ch := make(chan int)
+        out := make(chan int)
         go generate(ch)
-        var p int
-        for p < n {
-                p := <-ch
-                ch1 := make(chan int)
-                go filter(ch, ch1, p)
-                ch = ch1
-        }
+        go func() {
+                for {
+                        p := <-ch
+                        out <- p
+                        ch1 := make(chan int)
+                        go filter(ch, ch1, p)
+                        ch = ch1
+                }
+        }()
+        return out
 }
