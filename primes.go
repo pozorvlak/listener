@@ -1,4 +1,4 @@
-package primes
+package main
 
 func generate(ch chan<- int) {
         for i := 2; ; i++ {
@@ -6,7 +6,7 @@ func generate(ch chan<- int) {
         }
 }
 
-func filter(in <-chan int, out chan<- int, prime int) {
+func filterMultiples(in <-chan int, out chan<- int, prime int) {
         for {
                 i := <-in
                 if i % prime != 0 {
@@ -24,7 +24,7 @@ func Primes() chan int {
                         p := <-ch
                         out <- p
                         ch1 := make(chan int)
-                        go filter(ch, ch1, p)
+                        go filterMultiples(ch, ch1, p)
                         ch = ch1
                 }
         }()
